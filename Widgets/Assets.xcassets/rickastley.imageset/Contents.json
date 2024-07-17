@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "rickastley.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
