@@ -1,9 +1,9 @@
 # Custom Widgets
 
 <p>
-<img src="screenshot1.png" alt="screenshot1.png" width="296"/>
-<img src="screenshot2.png" alt="screenshot2.png" width="296"/>
-<img src="screenshot3.png" alt="screenshot3.png" width="296"/>
+<img src="screenshot1.png" alt="screenshot1.png" width="250"/>
+<img src="screenshot2.png" alt="screenshot2.png" width="250"/>
+<img src="screenshot3.png" alt="screenshot3.png" width="250"/>
 </p>
 
 ## About
