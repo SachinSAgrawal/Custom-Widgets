@@ -1,8 +1,10 @@
 # Custom Widgets
 
-![screenshot1](screenshot1.png)
-![screenshot2](screenshot2.png)
-![screenshot3](screenshot3.png)
+<p>
+<img src="screenshot1.png" alt="screenshot1.png" width="296"/>
+<img src="screenshot2.png" alt="screenshot2.png" width="296"/>
+<img src="screenshot3.png" alt="screenshot3.png" width="296"/>
+</p>
 
 ## About
 I wanted to create a fancy weather widget for my Lock Screen using OpenWeatherMap's [API](https://openweathermap.org/api), however, I didn't know where to start, so I created all these other (simpler) widgets to learn how to make them and also explore their different capabilities. If you like this app or found it useful, I would appreciate if you starred it or even shared it with your friends. I also don't expect to work on this too much more, as I am quite satisfied with the end result.
