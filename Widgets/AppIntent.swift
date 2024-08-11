@@ -10,7 +10,7 @@ import AppIntents
 
 struct ConfigurationAppIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "Input"
-    static var description = IntentDescription("See the time and some inputted text.")
+    static var description = IntentDescription("Input text that can be displayed in the widget.")
 
     // An example configurable parameter.
     @Parameter(title: "Input", default: "Default")

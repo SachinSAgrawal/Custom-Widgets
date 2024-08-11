@@ -79,6 +79,7 @@ struct TimerWidgetEntryView: View {
     var body: some View {
         VStack {
             Text("Timer:")
+                .foregroundStyle(.white)
             contentView
         }
         .multilineTextAlignment(.center)
@@ -106,11 +107,11 @@ struct TimerWidgetEntryView: View {
     private var textColor: Color {
         switch entry.countdownState {
         case .counting:
-            .primary
+            .white
         case .nearEnd:
             .red
         case .end:
-            .secondary
+            .gray
         }
     }
 }

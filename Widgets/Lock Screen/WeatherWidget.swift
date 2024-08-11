@@ -11,6 +11,33 @@ import Charts
 import MapKit
 import CoreLocation
 import Combine
+import AppIntents
+
+enum TemperatureUnit: String, AppEnum {
+    case celsius = "metric"
+    case fahrenheit = "imperial"
+    
+    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Temperature Unit")
+    
+    static var caseDisplayRepresentations: [TemperatureUnit: DisplayRepresentation] = [
+        .celsius: DisplayRepresentation(title: "Celsius"),
+        .fahrenheit: DisplayRepresentation(title: "Fahrenheit")
+    ]
+}
+
+struct UnitAppIntent: WidgetConfigurationIntent {
+    static var title: LocalizedStringResource = "Weather"
+    static var description = IntentDescription("Display temperature in Celsius or Fahrenheit.")
+    
+    @Parameter(title: "Temperature Unit", default: .fahrenheit)
+    var temperatureUnit: TemperatureUnit
+}
+
+extension UnitAppIntent {
+    func saveTemperatureUnit() {
+        UserDefaults.standard.set(temperatureUnit.rawValue, forKey: "temperatureUnit")
+    }
+}
 
 class WidgetLocationManager: NSObject, CLLocationManagerDelegate {
     var locationManager: CLLocationManager?
@@ -88,8 +115,8 @@ class NetworkService {
     let baseURL = "https://api.openweathermap.org/data/2.5"
     let apiKey = "yourTokenHere"
     
-    func fetchDailyForecast(latitude: Double, longitude: Double, completion: @escaping (Result<WeatherResponse, Error>) -> Void) {
-        let urlString = "\(baseURL)/onecall?lat=\(latitude)&lon=\(longitude)&exclude=minutely,hourly,alerts&appid=\(apiKey)&units=imperial"
+    func fetchDailyForecast(latitude: Double, longitude: Double, temperatureUnit: TemperatureUnit, completion: @escaping (Result<WeatherResponse, Error>) -> Void) {
+            let urlString = "\(baseURL)/onecall?lat=\(latitude)&lon=\(longitude)&exclude=minutely,hourly,alerts&appid=\(apiKey)&units=\(temperatureUnit.rawValue)"
         
         guard let url = URL(string: urlString) else {
             completion(.failure(NetworkError.invalidURL))
@@ -159,68 +186,106 @@ struct Condition: Codable, Equatable, Hashable {
     let description: String
 }
 
-class WeatherProvider: TimelineProvider {
+class WeatherProvider: AppIntentTimelineProvider {
+    typealias Intent = UnitAppIntent
+    
     func placeholder(in context: Context) -> WeatherEntry {
-        WeatherEntry(date: Date(), dailyForecasts: Array(repeating: Daily(dt: 0, temp: Temperature(morn: 0, day: 0, eve: 0, night: 0, min: 0, max: 0), weather: [Conditions(icon: "unknown")], pop: 0), count: 4), currentWeather: Current(temp: 0, weather: [Condition(description: "unknown")]))
+        WeatherEntry(date: Date(), dailyForecasts: Array(repeating: Daily(dt: 0, temp: Temperature(morn: 0, day: 0, eve: 0, night: 0, min: 0, max: 0), weather: [Conditions(icon: "unknown")], pop: 0), count: 4), currentWeather: Current(temp: 0, weather: [Condition(description: "placeholder")]))
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (WeatherEntry) -> Void) {
-        let entry = WeatherEntry(date: Date(), dailyForecasts: Array(repeating: Daily(dt: 0, temp: Temperature(morn: 0, day: 0, eve: 0, night: 0, min: 0, max: 0), weather: [Conditions(icon: "unknown")], pop: 0), count: 4), currentWeather: Current(temp: 0, weather: [Condition(description: "unknown")]))
-        completion(entry)
+    func snapshot(for configuration: UnitAppIntent, in context: Context) async -> WeatherEntry {
+        let entry = WeatherEntry(date: Date(), dailyForecasts: Array(repeating: Daily(dt: 0, temp: Temperature(morn: 0, day: 0, eve: 0, night: 0, min: 0, max: 0), weather: [Conditions(icon: "unknown")], pop: 0), count: 4), currentWeather: Current(temp: 0, weather: [Condition(description: "snapshot")]))
+        return entry
     }
 
     var widgetLocationManager = WidgetLocationManager()
     
-    func getTimeline(in context: Context, completion: @escaping (Timeline<WeatherEntry>) -> Void) {
-        widgetLocationManager.fetchLocation { location in
-            let latitude = location.coordinate.latitude
-            let longitude = location.coordinate.longitude
-            
-            UserDefaults.standard.setValue(latitude, forKey: "latitude")
-            UserDefaults.standard.setValue(longitude, forKey: "longitude")
-            
-            let locationString = String(format: "Location: %.2f, %.2f", latitude, longitude)
-            print(locationString)
-            
-            location.fetchLocationDetails { sublocality, locality, country, error in
-                guard let sublocality = sublocality, let locality = locality, let country = country, error == nil else { return }
+    func timeline(for configuration: UnitAppIntent, in context: Context) async -> Timeline<WeatherEntry> {
+        return await withCheckedContinuation { continuation in
+            widgetLocationManager.fetchLocation { location in
+                let latitude = location.coordinate.latitude
+                let longitude = location.coordinate.longitude
                 
-                let locationString: String = sublocality + ", " + locality + ", " + country
-                UserDefaults.standard.setValue(locationString, forKey: "location")
+                UserDefaults.standard.setValue(latitude, forKey: "latitude")
+                UserDefaults.standard.setValue(longitude, forKey: "longitude")
+                
+                let locationString = String(format: "Location: %.2f, %.2f", latitude, longitude)
                 print(locationString)
-            }
-        }
-        
-        let latitude = UserDefaults.standard.object(forKey: "latitude") as? Double ?? 40.5
-        let longitude = UserDefaults.standard.object(forKey: "longitude") as? Double ?? -74.0
-    
-        NetworkService.shared.fetchDailyForecast(latitude: latitude, longitude: longitude) { result in
-            var entries: [WeatherEntry] = []
-            let currentDate = Date()
-            
-            switch result {
-            case .success(let forecast):
-                let firstFourDays = Array(forecast.daily.prefix(4))
-                let entryDate = currentDate
-                let entry = WeatherEntry(date: entryDate, dailyForecasts: firstFourDays, currentWeather: forecast.current)
-                entries.append(entry)
                 
-            case .failure(let error):
-                print("Failed to fetch weather data: \(error.localizedDescription)")
-                let entryDate = currentDate
-                let entry = WeatherEntry(date: entryDate, dailyForecasts: Array(repeating: Daily(dt: 0, temp: Temperature(morn: 0, day: 0, eve: 0, night: 0, min: 0, max: 0), weather: [Conditions(icon: "unknown")], pop: 0), count: 4), currentWeather: Current(temp: 0, weather: [Condition(description: "unknown")]))
-                entries.append(entry)
+                location.fetchLocationDetails { locality, administrativeArea, country, error in
+                    guard let locality = locality, let administrativeArea = administrativeArea, let country = country, error == nil else { return }
+                    
+                    let locationStringWithoutCountry = locality + ", " + administrativeArea
+                    let locationStringWithCountry = locationStringWithoutCountry + ", " + country
+
+                    let locationString = locationStringWithCountry.count > 24 ? locationStringWithoutCountry : locationStringWithCountry
+
+                    UserDefaults.standard.setValue(locationString, forKey: "location")
+                    print(locationString)
+                }
             }
             
-            let nextUpdate = Calendar.current.date(byAdding: DateComponents(minute: 30), to: currentDate)!
-            let timeline = Timeline(entries: entries, policy: .after(nextUpdate))
-
-            completion(timeline)
+            let latitude = UserDefaults.standard.object(forKey: "latitude") as? Double ?? 40.5
+            let longitude = UserDefaults.standard.object(forKey: "longitude") as? Double ?? -74.0
+            
+            let temperatureUnit = configuration.temperatureUnit
+        
+            NetworkService.shared.fetchDailyForecast(latitude: latitude, longitude: longitude, temperatureUnit: temperatureUnit) { result in
+                var entries: [WeatherEntry] = []
+                let currentDate = Date()
+                
+                switch result {
+                case .success(let forecast):
+                    let firstFourDays = Array(forecast.daily.prefix(4))
+                    let entryDate = currentDate
+                    let entry = WeatherEntry(date: entryDate, dailyForecasts: firstFourDays, currentWeather: forecast.current)
+                    entries.append(entry)
+                    
+                    if let encodedEntry = try? JSONEncoder().encode(entry) {
+                        UserDefaults.standard.set(encodedEntry, forKey: "lastSuccessfulWeatherEntry")
+                    }
+                    
+                case .failure(let error):
+                    print("Failed to fetch weather data: \(error.localizedDescription)")
+                    
+                    if let lastSuccessfulData = UserDefaults.standard.data(forKey: "lastSuccessfulWeatherEntry"),
+                       let lastSuccessfulEntry = try? JSONDecoder().decode(WeatherEntry.self, from: lastSuccessfulData) {
+                        
+                        let timeSinceLastUpdate = currentDate.timeIntervalSince(lastSuccessfulEntry.date)
+                        
+                        if timeSinceLastUpdate <= 6 * 3600 {
+                            let currentWeather: Current
+                            
+                            if timeSinceLastUpdate > 3 * 3600 {
+                                currentWeather = Current(temp: 0, weather: [Condition(description: "data outdated")])
+                            } else {
+                                currentWeather = lastSuccessfulEntry.currentWeather
+                            }
+                            
+                            let entry = WeatherEntry(date: lastSuccessfulEntry.date, dailyForecasts: lastSuccessfulEntry.dailyForecasts, currentWeather: currentWeather)
+                            entries.append(entry)
+                        } else {
+                            let entryDate = currentDate
+                            let entry = WeatherEntry(date: entryDate, dailyForecasts: Array(repeating: Daily(dt: 0, temp: Temperature(morn: 0, day: 0, eve: 0, night: 0, min: 0, max: 0), weather: [Conditions(icon: "unknown")], pop: 0), count: 4), currentWeather: Current(temp: 0, weather: [Condition(description: "update failed")]))
+                            entries.append(entry)
+                        }
+                    } else {
+                        let entryDate = currentDate
+                        let entry = WeatherEntry(date: entryDate, dailyForecasts: Array(repeating: Daily(dt: 0, temp: Temperature(morn: 0, day: 0, eve: 0, night: 0, min: 0, max: 0), weather: [Conditions(icon: "unknown")], pop: 0), count: 4), currentWeather: Current(temp: 0, weather: [Condition(description: "entry missing")]))
+                        entries.append(entry)
+                    }
+                }
+                
+                let nextUpdate = Calendar.current.date(byAdding: DateComponents(minute: 30), to: currentDate)!
+                let myTimeline = Timeline(entries: entries, policy: .after(nextUpdate))
+                
+                continuation.resume(returning: myTimeline)
+            }
         }
     }
 }
 
-struct WeatherEntry: TimelineEntry {
+struct WeatherEntry: TimelineEntry, Codable {
     let date: Date
     let dailyForecasts: [Daily]
     let currentWeather: Current
@@ -321,7 +386,7 @@ struct WeatherWidgetEntryView : View {
         VStack(spacing: 0) {
             let latitude = UserDefaults.standard.object(forKey: "latitude") as? Double ?? 40.5
             let longitude = UserDefaults.standard.object(forKey: "longitude") as? Double ?? -74.0
-            let currLocation = UserDefaults.standard.object(forKey: "location") as? String ?? "Manhattan, New York, US"
+            let currLocation = UserDefaults.standard.object(forKey: "location") as? String ?? "New York, NY, US"
             
             let locationString = String(format: "%.2f, %.2f", latitude, longitude)
             
@@ -398,7 +463,7 @@ struct WeatherWidget: Widget {
     let kind: String = "WeatherWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherProvider()) { entry in
+        AppIntentConfiguration(kind: kind, intent: UnitAppIntent.self, provider: WeatherProvider()) { entry in
             WeatherWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Weather")
@@ -420,9 +485,9 @@ struct WeatherWidget_Previews: PreviewProvider {
 }
 
 extension CLLocation {
-    func fetchLocationDetails(completion: @escaping (_ sublocality: String?, _ locality: String?, _ country: String?, _ error: Error?) -> ()) {
+    func fetchLocationDetails(completion: @escaping (_ locality: String?, _ administrativeArea: String?, _ country: String?, _ error: Error?) -> ()) {
         CLGeocoder().reverseGeocodeLocation(self) { (placemarks, error) in
-            completion(placemarks?.first?.subLocality, placemarks?.first?.locality, placemarks?.first?.isoCountryCode, error)
+            completion(placemarks?.first?.locality, placemarks?.first?.administrativeArea, placemarks?.first?.isoCountryCode, error)
         }
     }
 }

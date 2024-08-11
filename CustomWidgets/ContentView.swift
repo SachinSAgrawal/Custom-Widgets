@@ -13,11 +13,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var locationManager: CLLocationManager?
 
     func checkLocationServices() {
-        if CLLocationManager.locationServicesEnabled() {
-            locationManager = CLLocationManager()
-            locationManager!.delegate = self
-        } else {
-            print("Location services are not enabled")
+        DispatchQueue.global().async {
+            if CLLocationManager.locationServicesEnabled() {
+                self.locationManager = CLLocationManager()
+                self.locationManager?.delegate = self
+            } else {
+                print("Location services are not enabled")
+            }
         }
     }
     
@@ -31,6 +33,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             print("Location authorization restricted or denied")
         case .authorizedWhenInUse, .authorizedAlways:
             print("Check Authorization: \(locationManager.location!.coordinate)")
+            
+            let latitude = locationManager.location!.coordinate.latitude
+            let longitude = locationManager.location!.coordinate.longitude
+
+            UserDefaults.standard.setValue(latitude, forKey: "latitude")
+            UserDefaults.standard.setValue(longitude, forKey: "longitude")
         @unknown default:
             print("Unknown location authorization status")
         }
@@ -40,14 +48,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         checkLocationAuthorization()
     }
     
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Failed to get user location: \(error.localizedDescription)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {        
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.first else { return }
         
         print("On Location Updated: \(location)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Failed to get user location: \(error.localizedDescription)")
     }
 }
 
@@ -61,6 +69,14 @@ struct ContentView: View {
             Text("Main App")
                 .font(.system(size: 24))
                 .padding(.bottom)
+            
+            let latitude = UserDefaults.standard.object(forKey: "latitude") as? Double ?? 40.5
+            let longitude = UserDefaults.standard.object(forKey: "longitude") as? Double ?? -74.0
+            let locationString = String(format: "Location: %.2f, %.2f", latitude, longitude)
+            
+            Text("\(locationString)")
+                .padding()
+                .font(.system(size: 18))
             
             if let hiddenText = hiddenText {
                 Text("Deep Link: \(hiddenText)")
