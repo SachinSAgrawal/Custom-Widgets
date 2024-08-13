@@ -19,8 +19,8 @@ struct TimerProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<TimerEntry>) -> Void) {
         let currentDate = Date()
-        let nearEndDate = Calendar.current.date(byAdding: .second, value: 20, to: currentDate) ?? currentDate
-        let endDate = Calendar.current.date(byAdding: .second, value: 30, to: currentDate) ?? currentDate
+        let nearEndDate = Calendar.current.date(byAdding: .second, value: 50, to: currentDate) ?? currentDate
+        let endDate = Calendar.current.date(byAdding: .second, value: 60, to: currentDate) ?? currentDate
 
         let entries = [
             TimerEntry(date: currentDate, displayDate: endDate, countdownState: .counting),

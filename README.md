@@ -13,26 +13,27 @@ I wanted to create a fancy weather widget for my Lock Screen using OpenWeatherMa
 Some of the widgets are heavily inspired by [pawello2222's](https://github.com/pawello2222/WidgetExamples) example widgets. However, I have modified a good bit of the syntax such that their widgets are simpler and more concise. Additionally, the fancy weather widget I mentioned earlier was inspired by the [Windy](https://apps.apple.com/us/app/windy-com-weather-radar/id1161387262) weather app's lock screen widget, however, I have improved upon it by adding more detail.
 
 ## Usage
-If you would like to use the weather widget, please add your OpenWeatherMap API token to line `116` of `WeatherWidget.swift`. You can get a free token [here](https://home.openweathermap.org/subscriptions/unauth_subscribe/onecall_30/base), which allows for up to 1000 calls a day, more than this app will ever make, given that it only updates every half an hour. Also, you must ensure this app and widgets have access to your location such that the weather widget can display the local weather. If the app is unable to determine your location, it will just fall back to New York City. You should be prompted to share your location with the app upon the first install. Please see the list below for the details and functionalities of each specific widget.
+If you would like to use the weather widget, please add your OpenWeatherMap API token to line `119` of `WeatherWidget.swift`. You can get a token [here](https://home.openweathermap.org/subscriptions/unauth_subscribe/onecall_30/base), which allows for up to free 1000 calls a day, and any additional calls are very cheap. However, 1000 calls is more than this app will ever make, given that it only updates every half an hour for a max of 50 times a day. Also, you must ensure this app and widgets have access to your location such that the weather widget can display the local weather. If the app is unable to determine your location, it will just fall back to New York City. You should be prompted to share your location with the app upon the first install. <br>
+The app itself does not have a ton of functionality. There are three pages that you can swipe between, the first of which is a list of all the widgets and a brief overview of their functionalities. Please see the list below for the full details and functionalities of each specific widget. The second screen is your current location, including latitude and longitude, as well as the location name. There is also a map in addition to the text. The last screen is where the text that can be deep linked will be displayed, along with a short guide taken from Apple Support on how to add widgets.
 
 ## List
 There are 8 widgets total, 7 for your home screen and 1 for your lock screen. Screenshots of all widgets are at the top of this file.
 
 #### Home Screen
-* Audio Widget - Play, pause, or stop music directly in the background. There is no need to even open the app. The default song is none other than Never Gonna Give You Up by Rick Astley, but this can easily be changed by replacing `song.mp3` inside of `Resources`.
+* Audio Widget - Play and pause music directly in the background. There is no need to even open the app. The default song is none other than Never Gonna Give You Up by Rick Astley, but this can easily be changed by replacing `song.mp3` inside of `Resources`.
 * Count Widget - Interact with buttons to increment or reset a counter. The data is saved locally such that even if the widget is removed, the counter will still persist. Created to learn about App Intents and interactive widgets.
 * Clock Widget - Display a clock that shows the time in various formats, including in 12 and 24 hour time and also with seconds. Created to learn about updating entries at a scheduled time, in this case, every minute.
 * Timer Widget - Displays the time counting down from 1 minute. The time turns red when there are only 10 seconds left, and once it has ended, the text switches to the word "end". It's kind of an evolution of the clock widget above.
 * Month Widget - Displays the current month with dates, where the current one is highlighted. Created to familiarize myself with LazyVGrids and recreate a native widget, but with control over the design and formatting.
 * Input Widget - Displays inputted text that can be deep linked. Press and hold on the widget to edit the input text. Tap on the widget to have the text be deep linked and show up within the main app. Created to learn about configuration intents.
-* Image Widget - Displays an image in the largest possible widget format, large. Since the audio widget plays Never Gonna Give You Up, this widget fittingly displays an image of Rick Astley from the music video. It can also be swapped out.
+* Image Widget - Displays an image in the biggest possible widget format, large. Since the audio widget plays Never Gonna Give You Up, this widget fittingly displays an image of Rick Astley from the music video. It can also be swapped out.
 
 #### Weather Widget
 * A lock screen widget that displays the 4-day weather forecast for your current location, which is in the top left of the widget. The top right shows your location, but in latitude and longitude, pulled directly from Apple's location services. Note that the location will lag behind every fetch because it relies on the location last saved to user defaults should this current update fail. The bottom left shows the current temperature and conditions, something Windy's does not have. The bottom right also shows the time since the weather was last fetched. Each fetch occurs 30 minutes after the previous one.
 * If the app is unable to fetch the most recent weather because your device is in airplane mode or not connected to Wi-Fi/cellular, it will keep on displaying the weather from the last successful fetch for up to 6 hours, while continuing to try to fetch the weather. The current temperature will expire after three hours after the last successful fetch. Once the full 6 hours have passed, the weather data will display as null, where everything is 0 and there are ?s for the condition. It will still continue trying to refetch the weather until the data is no longer null.
 * The middle section of the widget is split into four sections, with each one corresponding to a subsequent day. Below the day of the week are the high and low temperatures for that day, as well as the average condition expected. Underneath that is the percentage chance that it will rain, where one filled raindrop means that there is an additional 20% chance for rain. If none of the raindrops are filled, it should be a day without rain. I have found this to sometimes be slightly inaccurate. This is not an issue with my code but with the data received from the API call.
 * Lastly, the squiggly line behind each day is a rough approximation of what the temperature will look like throughout the day, starting in the morning and extending into the night. Please note that it is only based on the four data points from the API and is being interpolated.
-* A new feature of this widget is the ability to choose between Celsius and Fahrenheit by tapping on the widget while customizing your lock screen. This will invoke a menu where you can select your preferred unit. 
+* A new feature of this widget is the ability to choose between Celsius and Fahrenheit by tapping on the widget while customizing your lock screen. This will invoke a menu where you can select your preferred unit. In this same menu, you can also have the weather use a custom location instead of your current one. Simply enable the toggle and type in your desired coordinates. If they are invalid, the fall back location is also New York City.
 
 ## Installation
 1. Clone this repository or download it as a zip folder and uncompress it.
@@ -58,10 +59,15 @@ The device must be either an iPhone or iPad running iOS 17.0 or newer.
 * [Combine](https://developer.apple.com/documentation/combine) - Customize handling of asynchronous events using event-processing.
 
 ## Bugs
-I have not tested this app super rigorously, so I would not be surprised if there some I am unaware of. If you find any, feel free to open up a new issue or even better, create a pull request fixing it.
+If you find any, feel free to open up a new issue or even better, create a pull request fixing it.
+
+#### Known
+- [x] App may crash when it is unable to determine device location, such as on an airplane.
+- [ ] App is laggy/stutters when swiping to the location page because the map may be loading.
 
 ## To-Do List
-- [ ] Add the ability to set a custom location
+- [x] Add the ability to set a custom weather location
+- [x] Improve the user interface of the main app itself
 - [ ] Show question marks instead of 0s for null data
 
 ## Contributors

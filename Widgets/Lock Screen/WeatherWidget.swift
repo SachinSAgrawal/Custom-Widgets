@@ -27,16 +27,19 @@ enum TemperatureUnit: String, AppEnum {
 
 struct UnitAppIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "Weather"
-    static var description = IntentDescription("Display temperature in Celsius or Fahrenheit.")
+    static var description = IntentDescription("Use Celsius/Fahrenheit or a custom location for the weather.")
     
     @Parameter(title: "Temperature Unit", default: .fahrenheit)
     var temperatureUnit: TemperatureUnit
-}
+    
+    @Parameter(title: "Custom Location", default: false)
+    var useCustomLocation: Bool
 
-extension UnitAppIntent {
-    func saveTemperatureUnit() {
-        UserDefaults.standard.set(temperatureUnit.rawValue, forKey: "temperatureUnit")
-    }
+    @Parameter(title: "Latitude", default: 40.7)
+    var latitude: Double?
+
+    @Parameter(title: "Longitude", default: -74)
+    var longitude: Double?
 }
 
 class WidgetLocationManager: NSObject, CLLocationManagerDelegate {
@@ -202,16 +205,33 @@ class WeatherProvider: AppIntentTimelineProvider {
     
     func timeline(for configuration: UnitAppIntent, in context: Context) async -> Timeline<WeatherEntry> {
         return await withCheckedContinuation { continuation in
-            widgetLocationManager.fetchLocation { location in
-                let latitude = location.coordinate.latitude
-                let longitude = location.coordinate.longitude
+            if configuration.useCustomLocation {
+                let defaultLatitude: Double = 40.7
+                let defaultLongitude: Double = -74.0
+
+                let latitude: Double = {
+                    if let configLatitude = configuration.latitude {
+                        return (configLatitude >= -90 && configLatitude <= 90) ? configLatitude : defaultLatitude
+                    } else {
+                        return defaultLatitude
+                    }
+                }()
+
+                let longitude: Double = {
+                    if let configLongitude = configuration.longitude {
+                        return (configLongitude >= -180 && configLongitude <= 180) ? configLongitude : defaultLongitude
+                    } else {
+                        return defaultLongitude
+                    }
+                }()
                 
                 UserDefaults.standard.setValue(latitude, forKey: "latitude")
                 UserDefaults.standard.setValue(longitude, forKey: "longitude")
                 
-                let locationString = String(format: "Location: %.2f, %.2f", latitude, longitude)
-                print(locationString)
+                let currLocation = String(format: "Location: %.2f, %.2f", latitude, longitude)
+                print(currLocation)
                 
+                let location = CLLocation(latitude: latitude, longitude: longitude)
                 location.fetchLocationDetails { locality, administrativeArea, country, error in
                     guard let locality = locality, let administrativeArea = administrativeArea, let country = country, error == nil else { return }
                     
@@ -223,9 +243,32 @@ class WeatherProvider: AppIntentTimelineProvider {
                     UserDefaults.standard.setValue(locationString, forKey: "location")
                     print(locationString)
                 }
+            } else {
+                widgetLocationManager.fetchLocation { location in
+                    let latitude = location.coordinate.latitude
+                    let longitude = location.coordinate.longitude
+                    
+                    UserDefaults.standard.setValue(latitude, forKey: "latitude")
+                    UserDefaults.standard.setValue(longitude, forKey: "longitude")
+                    
+                    let currLocation = String(format: "Location: %.2f, %.2f", latitude, longitude)
+                    print(currLocation)
+                    
+                    location.fetchLocationDetails { locality, administrativeArea, country, error in
+                        guard let locality = locality, let administrativeArea = administrativeArea, let country = country, error == nil else { return }
+                        
+                        let locationStringWithoutCountry = locality + ", " + administrativeArea
+                        let locationStringWithCountry = locationStringWithoutCountry + ", " + country
+                        
+                        let locationString = locationStringWithCountry.count > 24 ? locationStringWithoutCountry : locationStringWithCountry
+                        
+                        UserDefaults.standard.setValue(locationString, forKey: "location")
+                        print(locationString)
+                    }
+                }
             }
             
-            let latitude = UserDefaults.standard.object(forKey: "latitude") as? Double ?? 40.5
+            let latitude = UserDefaults.standard.object(forKey: "latitude") as? Double ?? 40.7
             let longitude = UserDefaults.standard.object(forKey: "longitude") as? Double ?? -74.0
             
             let temperatureUnit = configuration.temperatureUnit
@@ -384,7 +427,7 @@ struct WeatherWidgetEntryView : View {
         let maxTemp = temps.max() ?? 0
         
         VStack(spacing: 0) {
-            let latitude = UserDefaults.standard.object(forKey: "latitude") as? Double ?? 40.5
+            let latitude = UserDefaults.standard.object(forKey: "latitude") as? Double ?? 40.7
             let longitude = UserDefaults.standard.object(forKey: "longitude") as? Double ?? -74.0
             let currLocation = UserDefaults.standard.object(forKey: "location") as? String ?? "New York, NY, US"
             

@@ -54,7 +54,7 @@ struct ImageWidget: Widget {
         .contentMarginsDisabled()
         .containerBackgroundRemovable(false)
         .configurationDisplayName("Image")
-        .description("Displays an image of Rick Astley.")
+        .description("Displays a large image of Rick Astley.")
         .supportedFamilies([.systemLarge])
     }
 }
