@@ -16,7 +16,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     @Published var latitude: Double = 40.7
     @Published var longitude: Double = -74.0
-    @Published var locationString: String = "New York, NY, US"
+    @Published var locationString: String = "Reverse Geolocation Failed"
 
     override init() {
         super.init()
@@ -83,7 +83,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private func loadSavedLocationData() {
         self.latitude = UserDefaults.standard.object(forKey: "latitude") as? Double ?? 40.7
         self.longitude = UserDefaults.standard.object(forKey: "longitude") as? Double ?? -74.0
-        self.locationString = UserDefaults.standard.object(forKey: "location") as? String ?? "New York, NY, US"
+        self.locationString = UserDefaults.standard.object(forKey: "location") as? String ?? "Reverse Geolocation Failed"
     }
     
     private func saveLocationData() {
@@ -215,8 +215,13 @@ struct ContentView: View {
                 Text("\(lonString)")
                     .padding(.bottom, 8)
                 
-                Text("\(locationManager.locationString)")
-                    .padding(.bottom, 8)
+                if !networkMonitor.isConnected {
+                    Text("No Internet Connection")
+                        .padding(.bottom, 8)
+                } else {
+                    Text("\(locationManager.locationString)")
+                        .padding(.bottom, 8)
+                }
                 
                 MapView(coordinate: mapCoordinate ?? CLLocationCoordinate2D(latitude: locationManager.latitude, longitude: locationManager.longitude))
                     .frame(height: 350)
