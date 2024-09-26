@@ -66,6 +66,7 @@ If you find any, feel free to open up a new issue or even better, create a pull 
 - [ ] App is laggy/stutters when swiping to the location page because the map may be loading.
 
 ## To-Do List
+- [x] Update app icons to support iOS 18 appearances
 - [x] Add the ability to set a custom weather location
 - [x] Improve the user interface of the main app itself
 - [ ] Show question marks instead of 0s for null data
