@@ -76,6 +76,8 @@ struct TimerEntry: TimelineEntry {
 struct TimerWidgetEntryView: View {
     var entry: TimerProvider.Entry
 
+    @Environment(\.widgetRenderingMode) var renderingMode
+    
     var body: some View {
         VStack {
             Text("Timer:")
@@ -110,8 +112,10 @@ struct TimerWidgetEntryView: View {
             .white
         case .nearEnd:
             .red
+            .opacity(renderingMode == .fullColor ? 1.0 : 0.4)
         case .end:
             .gray
+            .opacity(renderingMode == .fullColor ? 1.0 : 0.6)
         }
     }
 }

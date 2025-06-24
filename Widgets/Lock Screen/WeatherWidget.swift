@@ -40,6 +40,9 @@ struct UnitAppIntent: WidgetConfigurationIntent {
 
     @Parameter(title: "Longitude", default: -74)
     var longitude: Double?
+    
+    @Parameter(title: "OpenWeatherMap", default: "API Key")
+    var apiKey: String
 }
 
 class WidgetLocationManager: NSObject, CLLocationManagerDelegate {
@@ -115,11 +118,19 @@ class WidgetLocationManager: NSObject, CLLocationManagerDelegate {
 class NetworkService {
     static let shared = NetworkService()
     
-    let baseURL = "https://api.openweathermap.org/data/2.5"
-    let apiKey = "yourTokenHere"
-    
-    func fetchDailyForecast(latitude: Double, longitude: Double, temperatureUnit: TemperatureUnit, completion: @escaping (Result<WeatherResponse, Error>) -> Void) {
-            let urlString = "\(baseURL)/onecall?lat=\(latitude)&lon=\(longitude)&exclude=minutely,hourly,alerts&appid=\(apiKey)&units=\(temperatureUnit.rawValue)"
+    func fetchDailyForecast(latitude: Double, longitude: Double, temperatureUnit: TemperatureUnit, apiKey: String, completion: @escaping (Result<WeatherResponse, Error>) -> Void) {
+        
+        let baseURL = "https://api.openweathermap.org/data/3.0/onecall?exclude=minutely,hourly,alerts"
+        
+        let rawKey = apiKey.isEmpty ? "tokenMustBeSetUsingConfigIntent" : apiKey
+        let key = rawKey
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .joined()
+        
+        let urlString = "\(baseURL)&lat=\(latitude)&lon=\(longitude)&appid=\(key)&units=\(temperatureUnit.rawValue)"
+        
+        print(urlString)
         
         guard let url = URL(string: urlString) else {
             completion(.failure(NetworkError.invalidURL))
@@ -272,8 +283,9 @@ class WeatherProvider: AppIntentTimelineProvider {
             let longitude = UserDefaults.standard.object(forKey: "longitude") as? Double ?? -74.0
             
             let temperatureUnit = configuration.temperatureUnit
+            let apiKey = configuration.apiKey
         
-            NetworkService.shared.fetchDailyForecast(latitude: latitude, longitude: longitude, temperatureUnit: temperatureUnit) { result in
+            NetworkService.shared.fetchDailyForecast(latitude: latitude, longitude: longitude, temperatureUnit: temperatureUnit, apiKey: apiKey) { result in
                 var entries: [WeatherEntry] = []
                 let currentDate = Date()
                 
@@ -529,8 +541,16 @@ struct WeatherWidget_Previews: PreviewProvider {
 
 extension CLLocation {
     func fetchLocationDetails(completion: @escaping (_ locality: String?, _ administrativeArea: String?, _ country: String?, _ error: Error?) -> ()) {
-        CLGeocoder().reverseGeocodeLocation(self) { (placemarks, error) in
-            completion(placemarks?.first?.locality, placemarks?.first?.administrativeArea, placemarks?.first?.isoCountryCode, error)
+        if let request = MKReverseGeocodingRequest(location: self) {
+            request.getMapItems { mapItems, error in
+                let placemark = mapItems?.first?.placemark
+                completion(
+                    placemark?.locality,
+                    placemark?.administrativeArea,
+                    placemark?.isoCountryCode,
+                    error
+                )
+            }
         }
     }
 }

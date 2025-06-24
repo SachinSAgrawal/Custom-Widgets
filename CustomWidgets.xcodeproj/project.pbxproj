@@ -13,6 +13,7 @@
 		035769382C3A2C0000A00DAA /* song.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 035769372C3A2C0000A00DAA /* song.mp3 */; };
 		035769392C3A2C0000A00DAA /* song.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 035769372C3A2C0000A00DAA /* song.mp3 */; };
 		039D99462C3A12AF00690CAD /* main.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 039D99452C3A12AF00690CAD /* main.mp3 */; };
+		03C2E8432E0AF97000DCFD46 /* Widgets.icon in Resources */ = {isa = PBXBuildFile; fileRef = 03C2E8422E0AF97000DCFD46 /* Widgets.icon */; };
 		03C8674D2C399B49001FEDCB /* CountWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C8674C2C399B49001FEDCB /* CountWidget.swift */; };
 		03E6E7D02C4744FF004AD1F9 /* screenshot3.png in Resources */ = {isa = PBXBuildFile; fileRef = 03E6E7CB2C4744FF004AD1F9 /* screenshot3.png */; };
 		03E6E7D12C4744FF004AD1F9 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 03E6E7CC2C4744FF004AD1F9 /* LICENSE.txt */; };
@@ -72,6 +73,7 @@
 		035769372C3A2C0000A00DAA /* song.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = song.mp3; sourceTree = "<group>"; };
 		039D99452C3A12AF00690CAD /* main.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = main.mp3; sourceTree = "<group>"; };
 		039D99492C3A13A800690CAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		03C2E8422E0AF97000DCFD46 /* Widgets.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = Widgets.icon; sourceTree = "<group>"; };
 		03C8674C2C399B49001FEDCB /* CountWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountWidget.swift; sourceTree = "<group>"; };
 		03E6E7CB2C4744FF004AD1F9 /* screenshot3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = screenshot3.png; sourceTree = "<group>"; };
 		03E6E7CC2C4744FF004AD1F9 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 				03F3182E2C29F89A0062A966 /* ContentView.swift */,
 				03F318882C2A09D50062A966 /* LaunchScreen.storyboard */,
 				03F318302C29F89C0062A966 /* Assets.xcassets */,
+				03C2E8422E0AF97000DCFD46 /* Widgets.icon */,
 				03F318322C29F89C0062A966 /* Preview Content */,
 			);
 			path = CustomWidgets;
@@ -307,6 +310,7 @@
 				03F318312C29F89C0062A966 /* Assets.xcassets in Resources */,
 				0357692A2C3A18D900A00DAA /* main.mp3 in Resources */,
 				03E6E7D22C4744FF004AD1F9 /* README.md in Resources */,
+				03C2E8432E0AF97000DCFD46 /* Widgets.icon in Resources */,
 				03E6E7D42C4744FF004AD1F9 /* screenshot2.png in Resources */,
 				03E6E7D12C4744FF004AD1F9 /* LICENSE.txt in Resources */,
 			);
@@ -502,12 +506,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Widgets;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CustomWidgets/Preview Content\"";
-				DEVELOPMENT_TEAM = 44LNM8FN8U;
+				DEVELOPMENT_TEAM = LP92N2QT42;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CustomWidgets/Info.plist;
@@ -526,13 +530,13 @@
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ChristianLourido.CustomWidgets;
+				PRODUCT_BUNDLE_IDENTIFIER = SachinAgrawal.CustomWidgets;
 				PRODUCT_NAME = "Custom Widgets";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -548,12 +552,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Widgets;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CustomWidgets/Preview Content\"";
-				DEVELOPMENT_TEAM = 44LNM8FN8U;
+				DEVELOPMENT_TEAM = LP92N2QT42;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CustomWidgets/Info.plist;
@@ -572,13 +576,13 @@
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ChristianLourido.CustomWidgets;
+				PRODUCT_BUNDLE_IDENTIFIER = SachinAgrawal.CustomWidgets;
 				PRODUCT_NAME = "Custom Widgets";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -597,7 +601,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 44LNM8FN8U;
+				DEVELOPMENT_TEAM = LP92N2QT42;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Widgets/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Widgets;
@@ -606,14 +610,14 @@
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Your location will be used for the local weather forecast.";
 				INFOPLIST_KEY_NSLocationUsageDescription = "Your location will be used for the local weather forecast.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location will be used for the local weather forecast.";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ChristianLourido.CustomWidgets.Widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = SachinAgrawal.CustomWidgets.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -629,7 +633,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 44LNM8FN8U;
+				DEVELOPMENT_TEAM = LP92N2QT42;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Widgets/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Widgets;
@@ -638,14 +642,14 @@
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Your location will be used for the local weather forecast.";
 				INFOPLIST_KEY_NSLocationUsageDescription = "Your location will be used for the local weather forecast.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location will be used for the local weather forecast.";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ChristianLourido.CustomWidgets.Widgets;
+				PRODUCT_BUNDLE_IDENTIFIER = SachinAgrawal.CustomWidgets.Widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;

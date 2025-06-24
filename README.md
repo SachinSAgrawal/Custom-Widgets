@@ -13,8 +13,8 @@ I wanted to create a fancy weather widget for my Lock Screen using OpenWeatherMa
 Some of the widgets are heavily inspired by [pawello2222's](https://github.com/pawello2222/WidgetExamples) example widgets. However, I have modified a good bit of the syntax such that their widgets are simpler and more concise. Additionally, the fancy weather widget I mentioned earlier was inspired by the [Windy](https://apps.apple.com/us/app/windy-com-weather-radar/id1161387262) weather app's lock screen widget, however, I have improved upon it by adding more detail.
 
 ## Usage
-If you would like to use the weather widget, please add your OpenWeatherMap API token to line `119` of `WeatherWidget.swift`. You can get a token [here](https://home.openweathermap.org/subscriptions/unauth_subscribe/onecall_30/base), which allows for up to free 1000 calls a day, and any additional calls are very cheap. However, 1000 calls is more than this app will ever make, given that it only updates every half an hour for a max of 50 times a day. Also, you must ensure this app and widgets have access to your location such that the weather widget can display the local weather. If the app is unable to determine your location, it will just fall back to New York City. You should be prompted to share your location with the app upon the first install. <br>
-The app itself does not have a ton of functionality. There are three pages that you can swipe between, the first of which is a list of all the widgets and a brief overview of their functionalities. Please see the list below for the full details and functionalities of each specific widget. The second screen is your current location, including latitude and longitude, as well as the location name. There is also a map in addition to the text. The last screen is where the text that can be deep linked will be displayed, along with a short guide taken from Apple Support on how to add widgets.
+If you would like to use the weather widget, you will need your own OpenWeatherMap API token. You can get one [here](https://home.openweathermap.org/subscriptions/unauth_subscribe/onecall_30/base), which allows for up to free 1000 calls a day, and any additional calls are very cheap. However, 1000 calls is more than this app will ever make, given that it only updates every half an hour for a max of 50 times a day. Also, you must ensure this app and widgets have access to your location such that the weather widget can display the local weather. If the app is unable to determine your location, it will just fall back to New York City. You should be prompted to share your location with the app upon the first install. <br>
+The app itself does not have a ton of functionality. There are four pages that you can swipe between, the first of which is a list of all the widgets and a brief overview of their functionalities. Please see the list below for the full details and functionalities of each specific widget. The second screen is a brief tutorial on how to add widgets to your home screen, with a link to Apple's full guide as well. The third screen is where the text that can be deep linked will be displayed, along with the app icons in their different rendering modes. The last screen has your current location, including latitude, longitude, and accuracy. There is a large map, with the place name using the reverse geolocation API underneath. 
 
 ## List
 There are 8 widgets total, 7 for your home screen and 1 for your lock screen. Screenshots of all widgets are at the top of this file.
@@ -26,14 +26,21 @@ There are 8 widgets total, 7 for your home screen and 1 for your lock screen. Sc
 * Timer Widget - Displays the time counting down from 1 minute. The time turns red when there are only 10 seconds left, and once it has ended, the text switches to the word "end". It's kind of an evolution of the clock widget above.
 * Month Widget - Displays the current month with dates, where the current one is highlighted. Created to familiarize myself with LazyVGrids and recreate a native widget, but with control over the design and formatting.
 * Input Widget - Displays inputted text that can be deep linked. Press and hold on the widget to edit the input text. Tap on the widget to have the text be deep linked and show up within the main app. Created to learn about configuration intents.
-* Image Widget - Displays an image in the biggest possible widget format, large. Since the audio widget plays Never Gonna Give You Up, this widget fittingly displays an image of Rick Astley from the music video. It can also be swapped out.
+* Image Widget - Displays an image in the biggest possible widget format, large. Since the audio widget plays Never Gonna Give You Up, this widget fittingly displays an image of Rick Astley from the music video. The image can also be swapped out.
 
 #### Weather Widget
-* A lock screen widget that displays the 4-day weather forecast for your current location, which is in the top left of the widget. The top right shows your location, but in latitude and longitude, pulled directly from Apple's location services. Note that the location will lag behind every fetch because it relies on the location last saved to user defaults should this current update fail. The bottom left shows the current temperature and conditions, something Windy's does not have. The bottom right also shows the time since the weather was last fetched. Each fetch occurs 30 minutes after the previous one.
+* A lock screen widget that displays the 4-day weather forecast for your current location, which is in the top left of the widget. The top right shows your location, but in latitude and longitude, pulled directly from Apple's location services. Note that while the reverse geolocation may fail and thus the placename is incorrect, the coordinates should still update, and it is the coordinates that are used to fetch the weather. The bottom left shows the current temperature and conditions, something Windy's widget does not have. The bottom right also shows the time since the weather was last fetched. Each fetch occurs ~30 minutes after the previous one.
 * If the app is unable to fetch the most recent weather because your device is in airplane mode or not connected to Wi-Fi/cellular, it will keep on displaying the weather from the last successful fetch for up to 6 hours, while continuing to try to fetch the weather. The current temperature will expire after three hours after the last successful fetch. Once the full 6 hours have passed, the weather data will display as null, where everything is 0 and there are ?s for the condition. It will still continue trying to refetch the weather until the data is no longer null.
 * The middle section of the widget is split into four sections, with each one corresponding to a subsequent day. Below the day of the week are the high and low temperatures for that day, as well as the average condition expected. Underneath that is the percentage chance that it will rain, where one filled raindrop means that there is an additional 20% chance for rain. If none of the raindrops are filled, it should be a day without rain. I have found this to sometimes be slightly inaccurate. This is not an issue with my code but with the data received from the API call.
-* Lastly, the squiggly line behind each day is a rough approximation of what the temperature will look like throughout the day, starting in the morning and extending into the night. Please note that it is only based on the four data points from the API and is being interpolated.
-* A new feature of this widget is the ability to choose between Celsius and Fahrenheit by tapping on the widget while customizing your lock screen. This will invoke a menu where you can select your preferred unit. In this same menu, you can also have the weather use a custom location instead of your current one. Simply enable the toggle and type in your desired coordinates. If they are invalid, the fall back location is also New York City.
+* The squiggly line behind each day is a rough approximation of what the temperature will look like throughout the day, starting in the morning and extending into the night. Please note that even though it is only interpolating the four data points from the API, I have found it to still be quite accurate.
+* You can choose whether the weather (haha) displays in Celsius or Fahrenheit. To do this, tap on the widget while customizing your lock screen. This will invoke a menu to select your preferred unit. In this same menu, you can also have the weather use a custom location instead of your current one. Simply enable the toggle and type in your desired coordinates. If they are invalid, the fall back location is also New York City.
+
+## Improvements
+I know that I said I wouldn't update this app more, but I did anyway, so here are a list of the most recent changes:
+* The design of the month widget has been brought more inline with the native one.
+* All of the widgets have been updated to render better with tinted appearances.
+* The app icon has been simplified to take full advantage of the new liquid glass.
+* You no longer need to manually input your OpenWeatherMap API key into the code, as it can now be set using App Intents in the same menu as the weather unit and location.
 
 ## Installation
 1. Clone this repository or download it as a zip folder and uncompress it.
@@ -48,7 +55,7 @@ Hopefully this goes without saying, but you need Xcode, which is only available 
 
 #### Notes
 You can run this app on the Xcode simulator or connect a physical device. <br>
-The device must be either an iPhone or iPad running iOS 17.0 or newer.
+The device must be either an iPhone or iPad running iOS 26.0 or newer.
 
 ## SDKs
 * [SwiftUI](https://developer.apple.com/xcode/swiftui/) - Helps you build great-looking apps across all Apple platforms.
@@ -69,6 +76,7 @@ If you find any, feel free to open up a new issue or even better, create a pull 
 - [x] Update app icons to support iOS 18 appearances
 - [x] Add the ability to set a custom weather location
 - [x] Improve the user interface of the main app itself
+- [x] Have the API Key be inputted using App Intents
 - [ ] Show question marks instead of 0s for null data
 
 ## Contributors

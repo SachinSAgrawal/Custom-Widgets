@@ -54,36 +54,47 @@ struct MonthWidgetEntryView: View {
     var entry: MonthProvider.Entry
 
     private let daysOfWeek = Calendar.current.shortWeekdaySymbols
+    
+    @Environment(\.widgetRenderingMode) var renderingMode
 
     var body: some View {
-        VStack(spacing: 4) {
-            Text(entry.date, style: .date)
+        let cellWidth = 14.0
+        
+        VStack(alignment: .leading, spacing: 2) {
+            Text(entry.date.formatted(.dateTime.year().month(.wide)))
                 .font(.system(size: 12, weight: .bold))
                 .foregroundColor(.white)
-                .padding([.bottom], 5)
-
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
+                .padding(.bottom, 6)
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.fixed(cellWidth), spacing: 5), count: 7), spacing: 5) {
                 ForEach(daysOfWeek, id: \.self) { day in
                     
+                    let isWeekend = day.hasPrefix("S")
+                    
                     Text(day.prefix(1))
-                        .font(.system(size: 10))
                         .foregroundColor(.white)
+                        .opacity(isWeekend ? 0.6 : 1.0)
                 }
                 
                 ForEach(entry.monthDates, id: \.self) { date in
                     if Calendar.current.isDate(date, equalTo: Date.distantPast, toGranularity: .day) {
                         Text("")
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .frame(maxWidth: cellWidth, maxHeight: .infinity)
                     } else {
+                        let weekday = Calendar.current.component(.weekday, from: date)
+                        let isWeekend = weekday == 1 || weekday == 7
+                        
                         Text("\(Calendar.current.component(.day, from: date))")
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Calendar.current.isDate(date, inSameDayAs: entry.date) ? Color.gray : Color.clear)
+                            .frame(maxWidth: cellWidth, maxHeight: .infinity)
+                            .background(Calendar.current.isDate(date, inSameDayAs: entry.date) ? renderingMode == .fullColor ? Color.gray : Color.white.opacity(0.4) : Color.clear)
                             .cornerRadius(2)
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.white)
+                            .opacity(isWeekend ? 0.6 : 1.0)
                     }
                 }
-                .font(.system(size: 7))
             }
+            .font(.system(size: 10))
+            .padding(0)
         }
         .padding()
         .containerBackground(.blue.gradient, for: .widget)

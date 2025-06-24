@@ -199,12 +199,25 @@ struct AudioWidgetButtonsView: View {
 }
 
 struct albumArtistView: View {
+    @Environment(\.widgetRenderingMode) var renderingMode
     var body: some View {
         HStack {
-            Image("albumcover")
-                .resizable()
-                .frame(width: 40, height: 40)
-                .padding(.leading, 2)
+            if renderingMode == .fullColor {
+                Image("albumcover")
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                    .padding(.leading, 2)
+                    .cornerRadius(2)
+            }
+            
+            if renderingMode == .accented {
+                Image("albumcover")
+                    .resizable()
+                    .widgetAccentedRenderingMode(.desaturated)
+                    .frame(width: 40, height: 40)
+                    .padding(.leading, 2)
+                    .cornerRadius(2)
+            }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text("Never Gonna Give You Up")
